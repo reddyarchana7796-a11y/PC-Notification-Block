@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PC Notification Blocker</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f3f3f3;
+margin:0;
+padding:0;
+}
+
+.container{
+width:700px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 0 10px gray;
+}
+
+h1{
+text-align:center;
+}
+
+.section{
+margin-top:20px;
+}
+
+.custom-options{
+display:none;
+margin-top:10px;
+padding-left:20px;
+}
+
+button{
+padding:10px 15px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+.notification{
+margin-top:15px;
+padding:10px;
+background:#e8f5e9;
+border:1px solid green;
+display:none;
+}
+
+.log{
+margin-top:20px;
+height:150px;
+overflow:auto;
+border:1px solid #ccc;
+padding:10px;
+background:#fafafa;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>PC Notification Blocker</h1>
+<p style="text-align:center;">Control and filter PC notifications</p>
+
+<div class="section">
+
+<label>System Status:</label>
+<input type="checkbox" id="systemStatus" onchange="updateStatus()">
+<span id="statusText">OFF</span>
+
+</div>
+
+<div class="section">
+
+<h3>Block Mode</h3>
+
+<input type="radio" name="mode" id="blockAll" checked onclick="toggleCustomize()"> Block All
+
+<br>
+
+<input type="radio" name="mode" id="customize" onclick="toggleCustomize()"> Customize Notifications
+
+<div class="custom-options" id="customOptions">
+
+<h4>Communication Apps</h4>
+<input type="checkbox" id="teams"> Microsoft Teams <br>
+<input type="checkbox" id="whatsapp"> WhatsApp Desktop <br>
+<input type="checkbox" id="slack"> Slack <br>
+<input type="checkbox" id="zoom"> Zoom <br>
+<input type="checkbox" id="discord"> Discord <br>
+
+<h4>Email & Calendar</h4>
+<input type="checkbox" id="email"> Email (Outlook / Gmail) <br>
+<input type="checkbox" id="calendar"> Calendar Reminders <br>
+<input type="checkbox" id="meeting"> Meeting Invitations <br>
+
+<h4>System Alerts</h4>
+<input type="checkbox" id="updates"> Windows Updates <br>
+<input type="checkbox" id="security"> Security Alerts <br>
+<input type="checkbox" id="battery"> Low Battery Alerts <br>
+<input type="checkbox" id="storage"> Storage Full Alerts <br>
+
+<h4>Browser Notifications</h4>
+<input type="checkbox" id="browser"> Website Notifications <br>
+<input type="checkbox" id="news"> News Alerts <br>
+<input type="checkbox" id="shopping"> Shopping Notifications <br>
+
+<h4>Social Media</h4>
+<input type="checkbox" id="facebook"> Facebook Alerts <br>
+<input type="checkbox" id="instagram"> Instagram Alerts <br>
+<input type="checkbox" id="twitter"> Twitter / X Alerts <br>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<h3>Schedule (24 Hour Format)</h3>
+
+<label>Start Time:</label>
+<input type="time" id="startTime">
+
+<br><br>
+
+<label>End Time:</label>
+<input type="time" id="endTime">
+
+</div>
+
+<div class="section">
+
+<button onclick="saveSettings()">Save Settings</button>
+<button onclick="simulateNotification()">Test Notification</button>
+
+</div>
+
+<div class="notification" id="notificationBox">
+<strong>Notification:</strong>
+<span id="notificationText"></span>
+</div>
+
+<div class="section">
+
+<h3>Activity Log</h3>
+<div class="log" id="logBox"></div>
+
+</div>
+
+</div>
+
+<script>
+
+function updateStatus(){
+
+let status=document.getElementById("systemStatus").checked;
+
+if(status){
+document.getElementById("statusText").innerText="ON";
+}else{
+document.getElementById("statusText").innerText="OFF";
+}
+
+}
+
+function toggleCustomize(){
+
+let custom=document.getElementById("customize").checked;
+let options=document.getElementById("customOptions");
+
+if(custom){
+options.style.display="block";
+}else{
+options.style.display="none";
+}
+
+}
+
+function saveSettings(){
+
+let start=document.getElementById("startTime").value;
+let end=document.getElementById("endTime").value;
+
+if(start=="" || end==""){
+alert("Please select start and end time");
+return;
+}
+
+logActivity("Schedule saved from "+start+" to "+end);
+
+alert("Settings saved successfully");
+
+}
+
+function simulateNotification(){
+
+let notifications=[
+
+"Microsoft Teams meeting starting",
+"WhatsApp message received",
+"Slack channel message",
+"Zoom meeting reminder",
+"Email notification received",
+"Calendar reminder",
+"Windows system update",
+"Security alert detected",
+"Battery low warning",
+"Browser website notification",
+"News alert received",
+"Shopping offer available",
+"Facebook notification",
+"Instagram like notification",
+"Twitter mention alert"
+
+];
+
+let random=notifications[Math.floor(Math.random()*notifications.length)];
+
+processNotification(random);
+
+}
+
+function processNotification(message){
+
+let blockAll=document.getElementById("blockAll").checked;
+
+let allowed=false;
+
+if(blockAll){
+
+allowed=false;
+
+}else{
+
+if(message.includes("Teams") && document.getElementById("teams").checked) allowed=true;
+if(message.includes("WhatsApp") && document.getElementById("whatsapp").checked) allowed=true;
+if(message.includes("Slack") && document.getElementById("slack").checked) allowed=true;
+if(message.includes("Zoom") && document.getElementById("zoom").checked) allowed=true;
+if(message.includes("Email") && document.getElementById("email").checked) allowed=true;
+if(message.includes("Calendar") && document.getElementById("calendar").checked) allowed=true;
+if(message.includes("update") && document.getElementById("updates").checked) allowed=true;
+if(message.includes("Security") && document.getElementById("security").checked) allowed=true;
+if(message.includes("Battery") && document.getElementById("battery").checked) allowed=true;
+if(message.includes("Browser") && document.getElementById("browser").checked) allowed=true;
+if(message.includes("News") && document.getElementById("news").checked) allowed=true;
+if(message.includes("Shopping") && document.getElementById("shopping").checked) allowed=true;
+if(message.includes("Facebook") && document.getElementById("facebook").checked) allowed=true;
+if(message.includes("Instagram") && document.getElementById("instagram").checked) allowed=true;
+if(message.includes("Twitter") && document.getElementById("twitter").checked) allowed=true;
+
+}
+
+if(allowed){
+
+showNotification(message);
+logActivity("Notification Allowed: "+message);
+
+}else{
+
+logActivity("Notification Blocked: "+message);
+
+}
+
+}
+
+function showNotification(message){
+
+let box=document.getElementById("notificationBox");
+
+document.getElementById("notificationText").innerText=message;
+
+box.style.display="block";
+
+setTimeout(function(){
+
+box.style.display="none";
+
+},3000);
+
+}
+
+function logActivity(text){
+
+let log=document.getElementById("logBox");
+
+let time=new Date().toLocaleTimeString();
+
+log.innerHTML+="["+time+"] "+text+"<br>";
+
+log.scrollTop=log.scrollHeight;
+
+}
+
+</script>
+
+</body>
+</html>
